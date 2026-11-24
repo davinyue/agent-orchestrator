@@ -5,19 +5,19 @@ set -eu
 script_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd -P)
 
 cat <<'BANNER'
-+---------------------------------------+
-|    ____   ___  ____  _____  __  __    |
-|   / ___| / _ \|  _ \| ____| \ \/ /    |
-|  | |    | | | | | | |  _|    \  /     |
-|  | |___ | |_| | |_| | |___  /  \      |
-|   \____| \___/|____/|_____|/_/\_\     |
-|                                       |
-|        O R C H E S T R A T O R        |
-|    Orchestrate with Astra or Sol.     |
-|          Execute with Luna.           |
-+---------------------------------------+
++-------------------------------------------+
+|         _     ____ __   __                |
+|        / \   / ___|\ \ / /                |
+|       / _ \ | |  _  \ V /                 |
+|      / ___ \| |_| |  | |                  |
+|     /_/   \_\\____|  |_|                  |
+|                                           |
+|        O R C H E S T R A T O R            |
+|  Orchestrate & review: Gemini 4 Neon XH   |
+|  Execute: Gemini 3.8 Flash High / Flash   |
++-------------------------------------------+
 BANNER
-printf '%s\n' 'Interactive project setup'
+printf '%s\n' 'Interactive Antigravity (AGY) project setup'
 printf '%s' 'Target repository path: '
 IFS= read -r target_path || exit 1
 
@@ -118,30 +118,30 @@ merge_conflicts() {
 }
 
 select_plan() {
-    printf '%s\n' 'Choose Profile to install'
-    # Keep the original profiles first for existing numeric selections.
-    printf '%s\n' '  1) Pro  - GPT-6 Astra (medium) orchestrates, GPT-6 Luna (max) executes, GPT-6 Astra (low) reviews'
-    printf '%s\n' '  2) Plus - GPT-6 Luna (max) orchestrates, GPT-6 Luna (medium) executes, GPT-6 Astra (low) reviews'
-    printf '%s\n' '  3) Pro (max 2 subagents) - GPT-6 Astra (medium) orchestrates, GPT-6 Luna (max) executes, GPT-6 Astra (low) reviews'
-    printf '%s\n' '  4) Plus (max 2 subagents) - GPT-6 Luna (max) orchestrates, GPT-6 Luna (medium) executes, GPT-6 Astra (low) reviews'
-    printf '%s\n' '  5) GPT6-SolMax-LunaMax - GPT-6.1 Sol (max) orchestrates and reviews, GPT-6 Luna (max) executes'
-    printf '%s\n' '  6) GPT6-SolMedium-LunaMax - GPT-6.1 Sol (medium) orchestrates and reviews, GPT-6 Luna (max) executes'
+    printf '%s\n' 'Choose Antigravity Profile to install'
+    printf '%s\n' '  1) NeonXHigh-FlashHigh - Gemini 4 Neon (XHigh) orchestrates & reviews, Gemini 3.8 Flash (High) / flash tier executes (max 4 subagents)'
+    printf '%s\n' '  2) NeonXHigh-FlashHigh-max-2-subagents - Same models, capped at max 2 concurrent subagents'
 
     while :; do
-        printf '%s' 'Select Profile [1-6] (default 1): '
+        printf '%s' 'Select Profile [1-2] (default 1): '
         if ! IFS= read -r answer; then
             printf '\nSetup cancelled: input ended before setup was complete.\n' >&2
             exit 1
         fi
 
-        case "$answer" in
-            1|pro|PRO|Pro|'') plan=pro; return ;;
-            2|plus|PLUS|Plus) plan=plus; return ;;
-            3|pro-max-2-subagents) plan=pro-max-2-subagents; return ;;
-            4|plus-max-2-subagents) plan=plus-max-2-subagents; return ;;
-            5|gpt6-SolMax-LunaMax|GPT6-SolMax-LunaMax) plan=GPT6-SolMax-LunaMax; return ;;
-            6|gpt6-SolMedium-LunaMax|GPT6-SolMedium-LunaMax) plan=GPT6-SolMedium-LunaMax; return ;;
-            *) printf '%s\n' 'Please enter a listed profile number or name.' ;;
+        normalized=$(printf '%s' "$answer" | tr '[:upper:]' '[:lower:]')
+        case "$normalized" in
+            1|''|default|neonxhigh-flashhigh)
+                plan=NeonXHigh-FlashHigh
+                return
+                ;;
+            2|max-2|neonxhigh-flashhigh-max-2-subagents)
+                plan=NeonXHigh-FlashHigh-max-2-subagents
+                return
+                ;;
+            *)
+                printf '%s\n' 'Please enter a listed profile number or name.'
+                ;;
         esac
     done
 }
@@ -222,15 +222,13 @@ copy_component() {
     component_installed=yes
 }
 
-plan=pro
+plan=NeonXHigh-FlashHigh
 select_plan
 
 installed=0
-for component in .codex .agents AGENTS.md; do
+for component in .agents AGENTS.md; do
     if confirm "Install $component?" yes; then
-        if [ "$component" = .codex ]; then
-            copy_component "$component" "$script_dir/profiles/$plan/codex"
-        elif [ "$component" = .agents ]; then
+        if [ "$component" = .agents ]; then
             copy_component "$component" "$script_dir/profiles/$plan/agents"
         else
             copy_component "$component"
@@ -244,4 +242,7 @@ for component in .codex .agents AGENTS.md; do
 done
 
 printf '\nSetup complete. %s component(s) installed in %s (profile: %s).\n' "$installed" "$target_dir" "$plan"
-printf '%s\n' 'See guides/ for optional Codex model and Fast-mode configurations.'
+printf '%s\n' 'Next steps:'
+printf '%s\n' '  - Antigravity App / IDE: select Gemini 4 Neon with Extra (XHigh) thinking level.'
+printf '%s\n' '  - Antigravity CLI: run `agy --model gemini-4-neon-xhigh` or merge profiles/'"$plan"'/cli/settings.json into ~/.gemini/antigravity-cli/settings.json.'
+printf '%s\n' 'See guides/ for /swarm exact model pinning and global ~/.gemini/config/ setup.'

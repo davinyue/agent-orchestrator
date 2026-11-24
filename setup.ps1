@@ -6,21 +6,21 @@ $ErrorActionPreference = 'Stop'
 
 $scriptDir = Split-Path -Parent $PSCommandPath
 $banner = @'
-+---------------------------------------+
-|    ____   ___  ____  _____  __  __    |
-|   / ___| / _ \|  _ \| ____| \ \/ /    |
-|  | |    | | | | | | |  _|    \  /     |
-|  | |___ | |_| | |_| | |___  /  \      |
-|   \____| \___/|____/|_____|/_/\_\     |
-|                                       |
-|        O R C H E S T R A T O R        |
-|    Orchestrate with Astra or Sol.     |
-|          Execute with Luna.           |
-+---------------------------------------+
++-------------------------------------------+
+|         _     ____ __   __                |
+|        / \   / ___|\ \ / /                |
+|       / _ \ | |  _  \ V /                 |
+|      / ___ \| |_| |  | |                  |
+|     /_/   \_\\____|  |_|                  |
+|                                           |
+|        O R C H E S T R A T O R            |
+|  Orchestrate & review: Gemini 4 Neon XH   |
+|  Execute: Gemini 3.8 Flash High / Flash   |
++-------------------------------------------+
 '@
 
 [Console]::WriteLine($banner)
-[Console]::WriteLine('Interactive project setup for Windows')
+[Console]::WriteLine('Interactive Antigravity (AGY) project setup for Windows')
 
 function Read-Confirmation {
     param(
@@ -51,35 +51,25 @@ function Read-Confirmation {
 }
 
 function Read-Plan {
-    [Console]::WriteLine('Choose Profile to install')
-    [Console]::WriteLine('  1) Pro  - GPT-6 Astra (medium) orchestrates, GPT-6 Luna (max) executes, GPT-6 Astra (low) reviews')
-    [Console]::WriteLine('  2) Plus - GPT-6 Luna (max) orchestrates, GPT-6 Luna (medium) executes, GPT-6 Astra (low) reviews')
-    [Console]::WriteLine('  3) Pro (max 2 subagents) - GPT-6 Astra (medium) orchestrates, GPT-6 Luna (max) executes, GPT-6 Astra (low) reviews')
-    [Console]::WriteLine('  4) Plus (max 2 subagents) - GPT-6 Luna (max) orchestrates, GPT-6 Luna (medium) executes, GPT-6 Astra (low) reviews')
-    [Console]::WriteLine('  5) GPT6-SolMax-LunaMax - GPT-6.1 Sol (max) orchestrates and reviews, GPT-6 Luna (max) executes')
-    [Console]::WriteLine('  6) GPT6-SolMedium-LunaMax - GPT-6.1 Sol (medium) orchestrates and reviews, GPT-6 Luna (max) executes')
+    [Console]::WriteLine('Choose Antigravity Profile to install')
+    [Console]::WriteLine('  1) NeonXHigh-FlashHigh - Gemini 4 Neon (XHigh) orchestrates & reviews, Gemini 3.8 Flash (High) / flash tier executes (max 4 subagents)')
+    [Console]::WriteLine('  2) NeonXHigh-FlashHigh-max-2-subagents - Same models, capped at max 2 concurrent subagents')
 
     while ($true) {
-        [Console]::Write('Select Profile [1-6] (default 1): ')
+        [Console]::Write('Select Profile [1-2] (default 1): ')
         $answer = [Console]::In.ReadLine()
         if ($null -eq $answer) {
             throw 'Input ended before setup was complete.'
         }
 
         switch ($answer.Trim().ToLowerInvariant()) {
-            '1' { return 'pro' }
-            'pro' { return 'pro' }
-            '' { return 'pro' }
-            '2' { return 'plus' }
-            'plus' { return 'plus' }
-            '3' { return 'pro-max-2-subagents' }
-            'pro-max-2-subagents' { return 'pro-max-2-subagents' }
-            '4' { return 'plus-max-2-subagents' }
-            'plus-max-2-subagents' { return 'plus-max-2-subagents' }
-            '5' { return 'GPT6-SolMax-LunaMax' }
-            'gpt6-solmax-lunamax' { return 'GPT6-SolMax-LunaMax' }
-            '6' { return 'GPT6-SolMedium-LunaMax' }
-            'gpt6-solmedium-lunamax' { return 'GPT6-SolMedium-LunaMax' }
+            '1' { return 'NeonXHigh-FlashHigh' }
+            '' { return 'NeonXHigh-FlashHigh' }
+            'default' { return 'NeonXHigh-FlashHigh' }
+            'neonxhigh-flashhigh' { return 'NeonXHigh-FlashHigh' }
+            '2' { return 'NeonXHigh-FlashHigh-max-2-subagents' }
+            'max-2' { return 'NeonXHigh-FlashHigh-max-2-subagents' }
+            'neonxhigh-flashhigh-max-2-subagents' { return 'NeonXHigh-FlashHigh-max-2-subagents' }
             default { [Console]::WriteLine('Please enter a listed profile number or name.') }
         }
     }
@@ -333,13 +323,10 @@ try {
     $profileDirectory = Join-Path $scriptDir "profiles/$plan"
 
     $installed = 0
-    foreach ($component in '.codex', '.agents', 'AGENTS.md') {
+    foreach ($component in '.agents', 'AGENTS.md') {
         if (Read-Confirmation -Prompt "Install ${component}?" -DefaultYes $true) {
-            $result = if ($component -eq '.codex') {
-                Install-Component -Name $component -TargetDirectory $targetDirectory -SourcePath (Join-Path $profileDirectory "codex")
-            }
-            elseif ($component -eq '.agents') {
-                Install-Component -Name $component -TargetDirectory $targetDirectory -SourcePath (Join-Path $profileDirectory "agents")
+            $result = if ($component -eq '.agents') {
+                Install-Component -Name $component -TargetDirectory $targetDirectory -SourcePath (Join-Path $profileDirectory 'agents')
             }
             else {
                 Install-Component -Name $component -TargetDirectory $targetDirectory
@@ -355,7 +342,10 @@ try {
 
     [Console]::WriteLine()
     [Console]::WriteLine("Setup complete. $installed component(s) installed in $targetDirectory (profile: $plan).")
-    [Console]::WriteLine('See guides/ for optional Codex model and Fast-mode configurations.')
+    [Console]::WriteLine('Next steps:')
+    [Console]::WriteLine('  - Antigravity App / IDE: select Gemini 4 Neon with Extra (XHigh) thinking level.')
+    [Console]::WriteLine("  - Antigravity CLI: run ``agy --model gemini-4-neon-xhigh`` or merge profiles/$plan/cli/settings.json into ~/.gemini/antigravity-cli/settings.json.")
+    [Console]::WriteLine('See guides/ for /swarm exact model pinning and global ~/.gemini/config/ setup.')
 }
 catch {
     [Console]::Error.WriteLine("Setup cancelled: $($_.Exception.Message)")

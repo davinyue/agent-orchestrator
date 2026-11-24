@@ -1,21 +1,20 @@
 # Fast Iteration
 
-Choose this preset when latency matters and you want Astra to orchestrate
-quickly with Luna subagents.
+Choose this workflow when low latency matters more than full multi-agent isolation.
 
-Start with the [Pro profile](full-orchestration.md). This optional root
-preset keeps Astra `medium`; the installed Luna roles remain at `max` and
-the Astra reviewer at `low`. For a Luna root, use the [Plus profile](plus-plan.md).
+## Option 1: Keep the installed profile, limit delegation
 
-Add or merge this into:
+Stay on `NeonXHigh-FlashHigh`, keep small edits root-only, and skip the `reviewer` subagent on low-risk exploratory changes. Spawn `explorer` or `tester` only when parallel inspection genuinely saves wall time.
 
-`~/.codex/config.toml`
+## Option 2: Antigravity built-in Orchestrator mode
 
-```toml
-model = "gpt-6-astra"
-model_reasoning_effort = "medium"
-service_tier = "fast"
-```
+For fast single-conversation planning + execution without spinning up multiple subagent threads, switch the model selector to Antigravity's built-in **Orchestrator** mode:
 
-If your Codex version does not support `service_tier`, remove that line and
-keep the model and reasoning settings.
+- **Antigravity App**: select **Orchestrator** in the model selector and configure **Gemini 4 Neon** as the planner and **Gemini 4 Hydrogen** as the executor under **Settings > Models > Orchestrator Settings**.
+- **Antigravity CLI**:
+
+  ```sh
+  agy --model "Orchestrator (Neon)"
+  ```
+
+Built-in Orchestrator hands off between planner and executor inside a single turn, reducing orchestration overhead for medium-sized tasks where independent subagent contexts are unnecessary.

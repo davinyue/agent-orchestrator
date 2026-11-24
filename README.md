@@ -1,45 +1,58 @@
-# Codex Sol/Astra Orchestrator + Luna Subagents
+# Antigravity (AGY) Orchestrator — Gemini 4 Neon (XHigh) + Gemini 3.8 Flash (High)
 
-Install a Codex profile with GPT-6 Astra, GPT-6.1 Sol, or GPT-6 Luna as the orchestrator,
-GPT-6 Luna execution subagents, and an independent reviewer.
+Install an Antigravity (AGY) multi-agent orchestration profile with **Gemini 4 Neon (Extra High)** as the root orchestrator and independent reviewer, and **Gemini 3.8 Flash (High)** / Flash-tier execution subagents (`explorer`, `worker`, `tester`, `researcher`).
 
-The Sol profiles use `gpt-6.1-sol` for both the orchestrator and reviewer.
+Works across **Antigravity App**, **Antigravity CLI (`agy`)**, **Antigravity IDE**, and Antigravity IDE extensions.
 
 ## Orchestration topology
 
-The diagram shows the Astra (Pro) and Sol orchestrators. Plus uses a Luna
-root, as shown in the profile table below. Execution roles use GPT-6 Luna;
-the reviewer uses Astra for Pro/Plus and Sol for Sol profiles.
-
 ```text
-           GPT-6 Astra / GPT-6.1 Sol
-             root / orchestrator
-                      |
-      +---------------+---------------+
-      |               |               |
-   explorer          worker         researcher
-  GPT-6 Luna       GPT-6 Luna       GPT-6 Luna
-      |               |
-      +-------+-------+
-              |
-           tester
-         GPT-6 Luna
-              |
-          reviewer
-      GPT-6 Astra / GPT-6.1 Sol
-              |
-              v
-           root agent
-      integrate + verify
+          Gemini 4 Neon (Extra High)
+            `gemini-4-neon-xhigh`
+              root / orchestrator
+                       |
+       +---------------+---------------+
+       |               |               |
+    explorer         worker        researcher
+  Flash / 3.8      Flash / 3.8     Flash / 3.8
+   Flash High      Flash High      Flash High
+       |               |
+       +-------+-------+
+               |
+            tester
+      Flash / 3.8 Flash High
+               |
+           reviewer
+   Gemini 4 Neon (Extra High)
+     `gemini-4-neon-xhigh`
+               |
+               v
+            root agent
+       integrate + verify
 ```
+
+### Model mapping across Antigravity surfaces
+
+Antigravity supports two multi-agent delegation mechanisms with different model granularity:
+
+1. **Standard Subagents (`invoke_subagent` + `.agents/agents/*.md`, default)**:
+   - Antigravity's custom subagent frontmatter and `invoke_subagent` tool accept **model tiers** (`inherit`, `flash_lite`, `flash`, `pro`) rather than arbitrary exact model+effort IDs.
+   - Start the root session on **Gemini 4 Neon (Extra / XHigh)** (`gemini-4-neon-xhigh`).
+   - `reviewer.md` sets `model: inherit`, so it runs on `gemini-4-neon-xhigh`.
+   - `explorer.md`, `worker.md`, `tester.md`, and `researcher.md` set `model: flash`, mapping to Antigravity's Flash subagent tier.
+2. **Exact Model Pinning (`/swarm`)**:
+   - When you explicitly start a swarm with `/swarm`, `swarm{action:"add", model:...}` accepts exact model identifiers verified via `swarm{action:"models"}`.
+   - Keep coordinator and `@reviewer` on `gemini-4-neon-xhigh` (`Gemini 4 Neon (XHigh)`), and pin `@explorer`, `@worker`, `@tester`, and `@researcher` to `gemini-3.8-flash-high` (`Gemini 3.8 Flash (High)`).
+
+> **Model lifecycle note**: Per the official Antigravity model catalog, **Gemini 3.8 Flash** is scheduled for removal on **November 30, 2026**. After that date, replace `gemini-3.8-flash-high` in `/swarm` with **Gemini 4 Hydrogen (High)** (`gemini-4-hydrogen-high`); `.agents/agents/*.md` roles using `model: flash` continue to work automatically.
 
 ## Setup
 
-1. Clone this repository and enter it:
+1. Clone this repository and switch to the `agy` branch:
 
    ```sh
-   git clone https://github.com/donvito/codex-astra-luna-orchestrator.git
-   cd codex-astra-luna-orchestrator
+   git clone -b agy <repo-url>
+   cd agent-orchestrator
    ```
 
 2. Run the installer for your platform:
@@ -62,102 +75,78 @@ the reviewer uses Astra for Pro/Plus and Sol for Sol profiles.
    pwsh -File .\setup.ps1
    ```
 
-3. When prompted, enter an **existing target repository other than this one**,
-   choose a profile by number or name (Enter selects Pro), and confirm which
-   components to install. For example:
+3. When prompted, enter an **existing target repository other than this one**, choose a profile by number or name (Enter selects `NeonXHigh-FlashHigh`), and confirm which components to install:
 
    ```text
    Target repository path: ../my-project
-   Select Profile [1-6] (default 1): 5
+   Select Profile [1-2] (default 1): 1
    ```
 
-The installer copies the selected configuration to `.codex/`, its skill to
-`.agents/`, and project instructions to `AGENTS.md`. Existing component files
-are updated only after confirmation; existing `AGENTS.md` content is preserved.
-Codex loads project-scoped configuration only for trusted projects.
+The installer copies the selected Antigravity customizations into `.agents/` and installs or appends workspace rules to `AGENTS.md`. Existing `.agents/` files are updated only after confirmation; existing `AGENTS.md` content is preserved.
 
 ### Installed target project
 
-If you install all three components into `../my-project`, the installer adds
-these paths alongside the project's existing files:
-
 ```text
 my-project/
-├── .codex/
-│   ├── config.toml
-│   └── agents/
-│       ├── explorer.toml
-│       ├── researcher.toml
-│       ├── reviewer.toml
-│       ├── tester.toml
-│       └── worker.toml
 ├── .agents/
+│   ├── agents/
+│   │   ├── explorer.md
+│   │   ├── researcher.md
+│   │   ├── reviewer.md
+│   │   ├── tester.md
+│   │   └── worker.md
 │   └── skills/
-│       └── astra-orchestrator/
+│       └── agy-orchestrator/
 │           └── SKILL.md
 └── AGENTS.md
 ```
 
-`profiles/<profile>/codex/` becomes `.codex/`, and
-`profiles/<profile>/agents/` becomes `.agents/`. The root `AGENTS.md` is
-copied to the target, or its instructions are appended if that file exists.
+### Selecting the root model (`Gemini 4 Neon Extra High`)
+
+- **Antigravity App / IDE**: choose **Gemini 4 Neon** in the model selector and set the thinking level to **Extra** (`Gemini 4 Neon (XHigh)`).
+- **Antigravity CLI**: launch with `--model gemini-4-neon-xhigh` (or run `/model` + `/effort xhigh` inside the TUI):
+
+  ```sh
+  cd ../my-project
+  agy --model gemini-4-neon-xhigh
+  ```
+
+  To make this your default CLI configuration, merge `profiles/NeonXHigh-FlashHigh/cli/settings.json` into `~/.gemini/antigravity-cli/settings.json` (do not blindly overwrite existing keys).
 
 ## How to use the skill
 
-From the target repository, launch Codex CLI. For the example above:
-
-```sh
-cd ../my-project
-codex
-```
-
-For complex work, Codex may select the skill automatically, or you can invoke
-it explicitly:
+For complex tasks, Antigravity automatically discovers `.agents/skills/agy-orchestrator/SKILL.md` and `.agents/agents/*.md`, or you can invoke the skill explicitly with a slash command:
 
 ```text
-$astra-orchestrator
-Implement the invoice export endpoint. Use the explorer to map the path,
-a worker to implement it, and the tester and reviewer to verify it.
+/agy-orchestrator
+Implement the invoice export endpoint. Use explorer to map the path,
+worker to implement it, and tester and reviewer to verify it.
 ```
-
-The skill keeps the `astra-orchestrator` name in every profile so the shared
-`AGENTS.md` works; the Sol profiles use Sol according to their configuration.
 
 ## Profiles
 
-| Choice | Profile | Root | Execution roles | Reviewer | Concurrent subagents |
+| Choice | Profile | Root | Execution roles (`explorer`, `worker`, `tester`, `researcher`) | Reviewer | Concurrent subagents |
 |---|---|---|---|---|---:|
-| 1 (default) | `pro` | Astra medium | Luna max | Astra low | 4 |
-| 2 | `plus` | Luna max | Luna medium | Astra low | 4 |
-| 3 | `pro-max-2-subagents` | Astra medium | Luna max | Astra low | 2 |
-| 4 | `plus-max-2-subagents` | Luna max | Luna medium | Astra low | 2 |
-| 5 | `GPT6-SolMax-LunaMax` | Sol max | Luna max | Sol max | 4 |
-| 6 | `GPT6-SolMedium-LunaMax` | Sol medium | Luna max | Sol medium | 4 |
+| 1 (default) | `NeonXHigh-FlashHigh` | `gemini-4-neon-xhigh` | `gemini-3.8-flash-high` (`model: flash` in subagents; exact in `/swarm`) | `gemini-4-neon-xhigh` (`model: inherit`) | 4 |
+| 2 | `NeonXHigh-FlashHigh-max-2-subagents` | `gemini-4-neon-xhigh` | `gemini-3.8-flash-high` (`model: flash` in subagents; exact in `/swarm`) | `gemini-4-neon-xhigh` (`model: inherit`) | 2 |
 
-All models above are GPT-6. Execution roles are explorer, worker, tester,
-and researcher; named roles pin their models and reasoning levels independently
-of the default subagent settings. Each ready-to-copy profile lives under
-`profiles/<profile>/`.
-
-For manual project setup, copy the selected profile's `codex/` and `agents/`
-to the target repository as `.codex/` and `.agents/`, and add this repository's
-`AGENTS.md`. For personal/global setup, copy its `codex/agents/` into
-`~/.codex/agents/`, its `agents/skills/astra-orchestrator/` into
-`~/.agents/skills/`, and **merge**, rather than replace, its `codex/config.toml`
-settings into `~/.codex/config.toml`. Do not overwrite other existing Codex
-settings.
+For personal/global installation across all repositories, copy `profiles/<profile>/agents/agents/*.md` into `~/.gemini/config/agents/`, copy `profiles/<profile>/agents/skills/agy-orchestrator/` into `~/.gemini/config/skills/agy-orchestrator/`, and append `AGENTS.md` to `~/.gemini/config/AGENTS.md`.
 
 ## Key directory structure
 
 ```text
 .
 ├── profiles/
-│   ├── pro/
-│   ├── plus/
-│   ├── pro-max-2-subagents/
-│   ├── plus-max-2-subagents/
-│   ├── GPT6-SolMax-LunaMax/
-│   └── GPT6-SolMedium-LunaMax/
+│   ├── NeonXHigh-FlashHigh/
+│   │   ├── agents/
+│   │   │   ├── agents/*.md
+│   │   │   └── skills/agy-orchestrator/SKILL.md
+│   │   └── cli/settings.json
+│   └── NeonXHigh-FlashHigh-max-2-subagents/
+│       ├── agents/
+│       │   ├── agents/*.md
+│       │   └── skills/agy-orchestrator/SKILL.md
+│       └── cli/settings.json
 ├── guides/
 ├── scripts/
 │   └── token_usage.py
@@ -171,15 +160,12 @@ settings.
 └── LICENSE
 ```
 
-Each profile contains `codex/config.toml`, `codex/agents/*.toml`, and
-`agents/skills/astra-orchestrator/SKILL.md`.
-
 ## Guides
 
-- [Pro orchestration and manual configuration](guides/full-orchestration.md)
-- [Plus profile and global setup](guides/plus-plan.md)
+- [Neon XHigh + Flash High orchestration and manual setup](guides/full-orchestration.md)
+- [Low-concurrency profile and global `~/.gemini/config/` setup](guides/low-concurrency.md)
+- [Complex repository work (worktrees, `/plan`, `/swarm`, `/boost`)](guides/complex-repo-work.md)
 - [Fast iteration](guides/fast-iteration.md) and [routine coding](guides/routine-coding.md)
-- [Complex repository work](guides/complex-repo-work.md)
 - [Token usage and measurement](guides/token-usage.md)
 
 ## License

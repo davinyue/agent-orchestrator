@@ -1,54 +1,62 @@
-# Pro Profile: Astra + Luna Orchestration
+# Neon XHigh + Flash High Orchestration
 
-Choose this preset when you want Astra to plan, orchestrate, and review while
-Luna handles the execution roles. Select Pro in `setup.sh` or `setup.ps1`.
-Setup copies `profiles/pro/codex/` to `.codex/` and
-`profiles/pro/agents/` to `.agents/` in the target repository without
-rewriting configuration. For manual installation, copy those same folders
-and the repository's `AGENTS.md` to the target.
+Choose the default `NeonXHigh-FlashHigh` profile when you want **Gemini 4 Neon (Extra High)** to plan, orchestrate, integrate, and independently review while Flash-tier execution roles handle codebase exploration, bounded coding, testing, and research.
 
-The topology is:
+## Topology
 
 ```text
-Astra root (medium)
-├── Luna explorer (max)
-├── Luna worker (max)
-├── Luna tester (max)
-├── Luna researcher (max)
-└── Astra reviewer (low)
+Gemini 4 Neon (Extra High) root (`gemini-4-neon-xhigh`)
+├── explorer   (model: flash / target: gemini-3.8-flash-high, read-only)
+├── worker     (model: flash / target: gemini-3.8-flash-high, workspace-write)
+├── tester     (model: flash / target: gemini-3.8-flash-high, workspace-write)
+├── researcher (model: flash / target: gemini-3.8-flash-high, read-only + web)
+└── reviewer   (model: inherit -> gemini-4-neon-xhigh, read-only)
 ```
 
-Put the root settings in the project-scoped `.codex/config.toml`, or merge
-them into `~/.codex/config.toml` for a personal/global setup:
+## Project-scoped installation
 
-```toml
-model = "gpt-6-astra"
-model_reasoning_effort = "medium"
+Run `./setup.sh` (or `setup.ps1`) and pick profile `1` (`NeonXHigh-FlashHigh`), or manually copy:
 
-[agents]
-enabled = true
-max_concurrent_threads_per_session = 4
-default_subagent_model = "gpt-6-luna"
-default_subagent_reasoning_effort = "max"
+- `profiles/NeonXHigh-FlashHigh/agents/` -> `<target-repo>/.agents/`
+- `AGENTS.md` -> `<target-repo>/AGENTS.md` (append if the file already exists)
+
+Antigravity discovers `.agents/agents/*.md`, `.agents/skills/agy-orchestrator/SKILL.md`, and `AGENTS.md` automatically in Antigravity App, Antigravity CLI, and Antigravity IDE.
+
+## Configuring the root model
+
+### Antigravity App / IDE
+
+Select **Gemini 4 Neon** in the model selector and set thinking level to **Extra** (`Gemini 4 Neon (XHigh)`).
+
+### Antigravity CLI
+
+Start a session directly:
+
+```sh
+agy --model gemini-4-neon-xhigh
 ```
 
-For the named roles, use these model settings in the corresponding files under
-`.codex/agents/`:
+Or merge `profiles/NeonXHigh-FlashHigh/cli/settings.json` into `~/.gemini/antigravity-cli/settings.json`:
 
-```toml
-# explorer.toml, worker.toml, tester.toml, researcher.toml
-model = "gpt-6-luna"
-model_reasoning_effort = "max"
+```json
+{
+  "$schema": "https://antigravity.google/schemas/v1/settings.json",
+  "model": "Gemini 4 Neon (XHigh)",
+  "agentMode": "auto",
+  "toolPermission": "proceed-in-sandbox",
+  "enableTerminalSandbox": true
+}
 ```
 
-```toml
-# reviewer.toml
-model = "gpt-6-astra"
-model_reasoning_effort = "low"
-```
+## Exact model pinning with `/swarm`
 
-The role files override the inherited `[agents]` defaults. Keep those explicit
-overrides when you want the topology above to remain stable. Remove them when
-you want all named roles to follow the defaults in `config.toml`.
+In Antigravity's `invoke_subagent` tool and `.agents/agents/*.md` YAML frontmatter, `model` accepts only tier values (`inherit`, `flash_lite`, `flash`, `pro`). As a result:
 
-For the Luna-root configuration, use the [Plus profile](plus-plan.md).
+- `reviewer` (`model: inherit`) runs the exact root model (`gemini-4-neon-xhigh`).
+- `explorer`, `worker`, `tester`, and `researcher` (`model: flash`) run Antigravity's Flash subagent tier.
+
+When you explicitly want exact per-worker model pinning (`gemini-3.8-flash-high` for execution roles and `gemini-4-neon-xhigh` for coordinator & reviewer), invoke `/swarm` and instruct the coordinator to verify live IDs via `swarm{action:"models"}`, pin execution workers to `Gemini 3.8 Flash (High)` (`gemini-3.8-flash-high`), and leave `@reviewer` on the coordinator's `Gemini 4 Neon (XHigh)` model.
+
+> **Lifecycle note**: Antigravity lists **Gemini 3.8 Flash** as scheduled for removal on **November 30, 2026**. After removal, pin `/swarm` execution workers to **Gemini 4 Hydrogen (High)** (`gemini-4-hydrogen-high`).
+
+For a 2-subagent concurrency cap and global `~/.gemini/config/` installation, see [low-concurrency.md](low-concurrency.md).

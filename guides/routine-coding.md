@@ -1,22 +1,17 @@
 # Routine Coding
 
-Choose this preset for predictable, routine coding tasks where lower cost and
-faster orchestration are preferred.
+Choose this workflow for predictable, localized tasks (single-file bug fixes, boilerplate updates, dependency bumps, simple tests) where lower quota usage and faster turnaround are preferred.
 
-This is an optional root override for the [Plus profile](plus-plan.md),
-lowering its Luna root from `max` to `medium`. The installed Luna subagents
-remain at `medium` and the Astra reviewer at `low`. If you adopt this override,
-update the installed skill's root-reasoning wording to match.
+## Recommended approach
 
-Add or merge this into:
+1. Do **not** invoke `/agy-orchestrator` for trivial single-file edits — the skill's delegation gate already keeps genuinely small changes root-only.
+2. Switch the session model directly to a fast model when you do not need `Gemini 4 Neon (Extra High)` reasoning:
+   - **Antigravity CLI**:
 
-`~/.codex/config.toml`
+     ```sh
+     agy --model gemini-3.8-flash-high
+     ```
 
-```toml
-model = "gpt-6-luna"
-model_reasoning_effort = "medium"
-service_tier = "fast"
-```
+   - **Antigravity App / IDE**: select **Gemini 3.8 Flash** with thinking level **High** (or **Gemini 4 Hydrogen** with thinking level **High** after Gemini 3.8 Flash retires on November 30, 2026).
 
-If your Codex version does not support `service_tier`, remove that line and
-keep the model and reasoning settings.
+Switch back to **Gemini 4 Neon (Extra / XHigh)** (`agy --model gemini-4-neon-xhigh`) when starting multi-file architecture work or independent code reviews.
