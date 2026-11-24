@@ -129,7 +129,7 @@ class TokenUsageCliTests(unittest.TestCase):
                 {
                     "type": "PLANNER_RESPONSE",
                     "created_at": "2026-11-24T06:55:05Z",
-                    "model": "gemini-3.8-flash-high",
+                    "model": "gemini-4-hydrogen-high",
                     "input_tokens": 500,
                     "cache_read_tokens": 1500,
                     "output_tokens": 300,
@@ -168,14 +168,14 @@ class TokenUsageCliTests(unittest.TestCase):
         output = self.run_cli("--list", "--date", "2026-11-24")
         self.assertRegex(
             output,
-            r"2026-11-24 06:54\s+f927fe48\s+2\s+gemini-3\.8-flash-high, gemini-4-neon-xhigh",
+            r"2026-11-24 06:54\s+f927fe48\s+2\s+gemini-4-hydrogen-high, gemini-4-neon-xhigh",
         )
 
     def test_latest_renders_markdown_with_cache_hit_rate(self):
         output = self.run_cli("--latest")
         self.assertIn("3 (1 root, 2 subagent(s))", output)
         self.assertIn("| `f927fe48` | root | gemini-4-neon-xhigh |", output)
-        self.assertIn("| `11111111` | worker (Invoice Worker) | gemini-3.8-flash-high |", output)
+        self.assertIn("| `11111111` | worker (Invoice Worker) | gemini-4-hydrogen-high |", output)
         self.assertIn("| `aaaaaaaa` | reviewer (Diff Reviewer) | gemini-4-neon-xhigh |", output)
         # Total uncached = 1900, cached = 12100 -> 12100 / 14000 = 86.4%
         self.assertIn("Cache hit rate on input: 86.4%", output)

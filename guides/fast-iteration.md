@@ -4,7 +4,7 @@ Choose this workflow when low latency matters more than full multi-agent isolati
 
 ## Option 1: Keep the installed profile, limit delegation
 
-Stay on `NeonXHigh-FlashHigh`, keep small edits root-only, and skip the `reviewer` subagent on low-risk exploratory changes. Spawn `explorer` or `tester` only when parallel inspection genuinely saves wall time.
+Stay on `NeonXHigh-HydrogenHigh`, keep small edits root-only, and skip the `reviewer` subagent on low-risk exploratory changes. Spawn `explorer` or `tester` only when parallel inspection genuinely saves wall time.
 
 ## Option 2: Antigravity built-in Orchestrator mode
 

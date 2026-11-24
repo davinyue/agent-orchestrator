@@ -8,8 +8,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 PROFILES = {
-    "NeonXHigh-FlashHigh": 4,
-    "NeonXHigh-FlashHigh-max-2-subagents": 2,
+    "NeonXHigh-HydrogenHigh": 4,
+    "NeonXHigh-HydrogenHigh-max-2-subagents": 2,
 }
 FLASH_ROLES = ("explorer", "researcher", "tester", "worker")
 READ_ONLY_ROLES = ("explorer", "researcher", "reviewer")
@@ -126,7 +126,8 @@ class AntigravityProfileTests(unittest.TestCase):
                 self.assertEqual(skill_meta["name"], "agy-orchestrator")
                 self.assertTrue(skill_meta["description"])
                 self.assertIn("gemini-4-neon-xhigh", skill_text)
-                self.assertIn("gemini-3.8-flash-high", skill_text)
+                self.assertIn("gemini-4-hydrogen-high", skill_text)
+                self.assertNotIn("gemini-3.8-flash-high", skill_text)
                 self.assertIn("invoke_subagent", skill_text)
                 self.assertIn("/swarm", skill_text)
                 self.assertIn(f"**{concurrency}**", skill_text)
@@ -147,7 +148,7 @@ class AntigravityProfileTests(unittest.TestCase):
         agents_md = (ROOT / "AGENTS.md").read_text(encoding="utf-8")
         self.assertIn("agy-orchestrator", agents_md)
         self.assertIn("Gemini 4 Neon (Extra High)", agents_md)
-        self.assertIn("Gemini 3.8 Flash (High)", agents_md)
+        self.assertIn("Gemini 4 Hydrogen (High)", agents_md)
         self.assertIn("invoke_subagent", agents_md)
         for marker in FORBIDDEN_CODEX_MARKERS:
             self.assertNotIn(marker, agents_md.lower())
@@ -157,13 +158,13 @@ class AntigravityProfileTests(unittest.TestCase):
         if shutil.which("pwsh"):
             installers.append(("powershell", ["pwsh", "-NoProfile", "-File", str(ROOT / "setup.ps1")]))
         choices = (
-            ("", "NeonXHigh-FlashHigh"),
-            ("1", "NeonXHigh-FlashHigh"),
-            ("NeonXHigh-FlashHigh", "NeonXHigh-FlashHigh"),
-            ("neonxhigh-flashhigh", "NeonXHigh-FlashHigh"),
-            ("2", "NeonXHigh-FlashHigh-max-2-subagents"),
-            ("max-2", "NeonXHigh-FlashHigh-max-2-subagents"),
-            ("NeonXHigh-FlashHigh-max-2-subagents", "NeonXHigh-FlashHigh-max-2-subagents"),
+            ("", "NeonXHigh-HydrogenHigh"),
+            ("1", "NeonXHigh-HydrogenHigh"),
+            ("NeonXHigh-HydrogenHigh", "NeonXHigh-HydrogenHigh"),
+            ("neonxhigh-hydrogenhigh", "NeonXHigh-HydrogenHigh"),
+            ("2", "NeonXHigh-HydrogenHigh-max-2-subagents"),
+            ("max-2", "NeonXHigh-HydrogenHigh-max-2-subagents"),
+            ("NeonXHigh-HydrogenHigh-max-2-subagents", "NeonXHigh-HydrogenHigh-max-2-subagents"),
         )
         for installer, command in installers:
             for choice, profile in choices:

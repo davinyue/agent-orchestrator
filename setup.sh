@@ -14,7 +14,7 @@ cat <<'BANNER'
 |                                           |
 |        O R C H E S T R A T O R            |
 |  Orchestrate & review: Gemini 4 Neon XH   |
-|  Execute: Gemini 3.8 Flash High / Flash   |
+|  Execute: Gemini 4 Hydrogen High / Flash  |
 +-------------------------------------------+
 BANNER
 printf '%s\n' 'Interactive Antigravity (AGY) project setup'
@@ -119,8 +119,8 @@ merge_conflicts() {
 
 select_plan() {
     printf '%s\n' 'Choose Antigravity Profile to install'
-    printf '%s\n' '  1) NeonXHigh-FlashHigh - Gemini 4 Neon (XHigh) orchestrates & reviews, Gemini 3.8 Flash (High) / flash tier executes (max 4 subagents)'
-    printf '%s\n' '  2) NeonXHigh-FlashHigh-max-2-subagents - Same models, capped at max 2 concurrent subagents'
+    printf '%s\n' '  1) NeonXHigh-HydrogenHigh - Gemini 4 Neon (XHigh) orchestrates & reviews, Gemini 4 Hydrogen (High) / flash tier executes (max 4 subagents)'
+    printf '%s\n' '  2) NeonXHigh-HydrogenHigh-max-2-subagents - Same models, capped at max 2 concurrent subagents'
 
     while :; do
         printf '%s' 'Select Profile [1-2] (default 1): '
@@ -131,12 +131,12 @@ select_plan() {
 
         normalized=$(printf '%s' "$answer" | tr '[:upper:]' '[:lower:]')
         case "$normalized" in
-            1|''|default|neonxhigh-flashhigh)
-                plan=NeonXHigh-FlashHigh
+            1|''|default|neonxhigh-hydrogenhigh)
+                plan=NeonXHigh-HydrogenHigh
                 return
                 ;;
-            2|max-2|neonxhigh-flashhigh-max-2-subagents)
-                plan=NeonXHigh-FlashHigh-max-2-subagents
+            2|max-2|neonxhigh-hydrogenhigh-max-2-subagents)
+                plan=NeonXHigh-HydrogenHigh-max-2-subagents
                 return
                 ;;
             *)
@@ -222,7 +222,7 @@ copy_component() {
     component_installed=yes
 }
 
-plan=NeonXHigh-FlashHigh
+plan=NeonXHigh-HydrogenHigh
 select_plan
 
 installed=0

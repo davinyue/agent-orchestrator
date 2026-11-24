@@ -9,9 +9,9 @@ Choose this workflow for predictable, localized tasks (single-file bug fixes, bo
    - **Antigravity CLI**:
 
      ```sh
-     agy --model gemini-3.8-flash-high
+     agy --model gemini-4-hydrogen-high
      ```
 
-   - **Antigravity App / IDE**: select **Gemini 3.8 Flash** with thinking level **High** (or **Gemini 4 Hydrogen** with thinking level **High** after Gemini 3.8 Flash retires on November 30, 2026).
+   - **Antigravity App / IDE**: select **Gemini 4 Hydrogen** with thinking level **High**.
 
 Switch back to **Gemini 4 Neon (Extra / XHigh)** (`agy --model gemini-4-neon-xhigh`) when starting multi-file architecture work or independent code reviews.

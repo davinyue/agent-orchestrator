@@ -45,14 +45,14 @@ scripts/token_usage.py --brain-dir ~/.gemini/antigravity/brain --list
 
 - **Uncached vs. cached input**: In Antigravity `transcript.jsonl`, `input_tokens` is uncached input and `cache_read_tokens` is cached input. Total input is `input_tokens + cache_read_tokens`, and cache hit rate is `cache_read_tokens / (input_tokens + cache_read_tokens)`.
 - **Root overhead dominates long sessions**: Because the root stays alive on `gemini-4-neon-xhigh` across the full task, keeping subagent reports concise and avoiding unnecessary root turns saves far more quota than micro-optimizing a single Flash worker.
-- **Parallelism trades tokens for latency**: Every concurrent subagent maintains and re-reads its own context. If quota is tight, use `NeonXHigh-FlashHigh-max-2-subagents`.
+- **Parallelism trades tokens for latency**: Every concurrent subagent maintains and re-reads its own context. If quota is tight, use `NeonXHigh-HydrogenHigh-max-2-subagents`.
 
 ## Reducing usage
 
 In rough order of impact:
 
 1. **Skip orchestration for small edits**: Keep single-file fixes root-only or run directly on a fast model (see [routine-coding.md](routine-coding.md)).
-2. **Cap concurrent subagents**: Use `NeonXHigh-FlashHigh-max-2-subagents` (max 2 active subagents).
+2. **Cap concurrent subagents**: Use `NeonXHigh-HydrogenHigh-max-2-subagents` (max 2 active subagents).
 3. **Reuse idle subagents**: Use `send_message` to follow up with an existing idle subagent instead of spawning a fresh conversation with a cold context.
 4. **Keep subagent reports concise**: Ask for file paths, symbols, commands, pass/fail summaries, and risks rather than raw logs.
 5. **Use `reviewer` selectively**: `reviewer` inherits `gemini-4-neon-xhigh`, so reserve it for non-trivial, high-risk, or multi-file changes.

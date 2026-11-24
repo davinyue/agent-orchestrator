@@ -15,7 +15,7 @@ $banner = @'
 |                                           |
 |        O R C H E S T R A T O R            |
 |  Orchestrate & review: Gemini 4 Neon XH   |
-|  Execute: Gemini 3.8 Flash High / Flash   |
+|  Execute: Gemini 4 Hydrogen High / Flash  |
 +-------------------------------------------+
 '@
 
@@ -52,8 +52,8 @@ function Read-Confirmation {
 
 function Read-Plan {
     [Console]::WriteLine('Choose Antigravity Profile to install')
-    [Console]::WriteLine('  1) NeonXHigh-FlashHigh - Gemini 4 Neon (XHigh) orchestrates & reviews, Gemini 3.8 Flash (High) / flash tier executes (max 4 subagents)')
-    [Console]::WriteLine('  2) NeonXHigh-FlashHigh-max-2-subagents - Same models, capped at max 2 concurrent subagents')
+    [Console]::WriteLine('  1) NeonXHigh-HydrogenHigh - Gemini 4 Neon (XHigh) orchestrates & reviews, Gemini 4 Hydrogen (High) / flash tier executes (max 4 subagents)')
+    [Console]::WriteLine('  2) NeonXHigh-HydrogenHigh-max-2-subagents - Same models, capped at max 2 concurrent subagents')
 
     while ($true) {
         [Console]::Write('Select Profile [1-2] (default 1): ')
@@ -63,13 +63,13 @@ function Read-Plan {
         }
 
         switch ($answer.Trim().ToLowerInvariant()) {
-            '1' { return 'NeonXHigh-FlashHigh' }
-            '' { return 'NeonXHigh-FlashHigh' }
-            'default' { return 'NeonXHigh-FlashHigh' }
-            'neonxhigh-flashhigh' { return 'NeonXHigh-FlashHigh' }
-            '2' { return 'NeonXHigh-FlashHigh-max-2-subagents' }
-            'max-2' { return 'NeonXHigh-FlashHigh-max-2-subagents' }
-            'neonxhigh-flashhigh-max-2-subagents' { return 'NeonXHigh-FlashHigh-max-2-subagents' }
+            '1' { return 'NeonXHigh-HydrogenHigh' }
+            '' { return 'NeonXHigh-HydrogenHigh' }
+            'default' { return 'NeonXHigh-HydrogenHigh' }
+            'neonxhigh-hydrogenhigh' { return 'NeonXHigh-HydrogenHigh' }
+            '2' { return 'NeonXHigh-HydrogenHigh-max-2-subagents' }
+            'max-2' { return 'NeonXHigh-HydrogenHigh-max-2-subagents' }
+            'neonxhigh-hydrogenhigh-max-2-subagents' { return 'NeonXHigh-HydrogenHigh-max-2-subagents' }
             default { [Console]::WriteLine('Please enter a listed profile number or name.') }
         }
     }

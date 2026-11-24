@@ -1,9 +1,9 @@
 ---
 name: agy-orchestrator
-description: "Orchestrate complex Antigravity (AGY) coding work with Gemini 4 Neon (Extra High) as root orchestrator and reviewer and Gemini 3.8 Flash (High) / Flash tier for exploration, implementation, testing, and research. Use for multi-file features, debugging across components, repo-wide changes, parallelizable workstreams, or when the user asks to delegate. Do not use for trivial edits or simple questions."
+description: "Orchestrate complex Antigravity (AGY) coding work with Gemini 4 Neon (Extra High) as root orchestrator and reviewer and Gemini 4 Hydrogen (High) / Flash tier for exploration, implementation, testing, and research. Use for multi-file features, debugging across components, repo-wide changes, parallelizable workstreams, or when the user asks to delegate. Do not use for trivial edits or simple questions."
 ---
 
-# Antigravity Orchestrator — Gemini 4 Neon (XHigh) + Gemini 3.8 Flash (High)
+# Antigravity Orchestrator — Gemini 4 Neon (XHigh) + Gemini 4 Hydrogen (High)
 
 The user's explicit instructions always take precedence over this skill.
 
@@ -12,7 +12,7 @@ The user's explicit instructions always take precedence over this skill.
 Target model assignment:
 - **root** (orchestrator / planner / integrator): `gemini-4-neon-xhigh` (**Gemini 4 Neon**, `Extra` / `xhigh` reasoning)
 - **reviewer**: `gemini-4-neon-xhigh` (**Gemini 4 Neon**, `Extra` / `xhigh` reasoning), in an independent read-only context
-- **explorer, worker, tester, researcher**: target `gemini-3.8-flash-high` (**Gemini 3.8 Flash**, `High` reasoning)
+- **explorer, worker, tester, researcher**: target `gemini-4-hydrogen-high` (**Gemini 4 Hydrogen**, `High` reasoning)
 - **concurrency limit**: keep at most **4** active subagents running concurrently
 
 How Antigravity enforces models across its two orchestration paths:
@@ -25,8 +25,7 @@ How Antigravity enforces models across its two orchestration paths:
    - Never start a swarm unprompted. Only use the `swarm` tool when the user explicitly invoked `/swarm` or a swarm is already active.
    - Run `swarm{action:"models"}` first to inspect live available model identifiers and display names.
    - Keep the coordinator and `@reviewer` on `gemini-4-neon-xhigh` (`Gemini 4 Neon (XHigh)` — omit `model` when coordinator already runs it).
-   - Pin `@explorer`, `@worker`, `@tester`, and `@researcher` to `gemini-3.8-flash-high` (`Gemini 3.8 Flash (High)`).
-   - **Deprecation fallback**: Antigravity lists **Gemini 3.8 Flash** as scheduled for removal on **2026-11-30**. If `gemini-3.8-flash-high` is no longer present in `swarm{action:"models"}`, inform the user and fall back to **Gemini 4 Hydrogen (High)** (`gemini-4-hydrogen-high`) for execution workers.
+   - Pin `@explorer`, `@worker`, `@tester`, and `@researcher` to `gemini-4-hydrogen-high` (`Gemini 4 Hydrogen (High)`).
 
 Do not silently substitute the root agent for a required Flash execution subagent, and do not escalate an execution role to `inherit`/`pro` unless the user asks or the subagent reports a genuine reasoning blocker.
 

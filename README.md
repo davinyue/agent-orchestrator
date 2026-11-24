@@ -1,6 +1,6 @@
-# Antigravity (AGY) Orchestrator — Gemini 4 Neon (XHigh) + Gemini 3.8 Flash (High)
+# Antigravity (AGY) Orchestrator — Gemini 4 Neon (XHigh) + Gemini 4 Hydrogen (High)
 
-Install an Antigravity (AGY) multi-agent orchestration profile with **Gemini 4 Neon (Extra High)** as the root orchestrator and independent reviewer, and **Gemini 3.8 Flash (High)** / Flash-tier execution subagents (`explorer`, `worker`, `tester`, `researcher`).
+Install an Antigravity (AGY) multi-agent orchestration profile with **Gemini 4 Neon (Extra High)** as the root orchestrator and independent reviewer, and **Gemini 4 Hydrogen (High)** / Flash-tier execution subagents (`explorer`, `worker`, `tester`, `researcher`).
 
 Works across **Antigravity App**, **Antigravity CLI (`agy`)**, **Antigravity IDE**, and Antigravity IDE extensions.
 
@@ -14,13 +14,13 @@ Works across **Antigravity App**, **Antigravity CLI (`agy`)**, **Antigravity IDE
        +---------------+---------------+
        |               |               |
     explorer         worker        researcher
-  Flash / 3.8      Flash / 3.8     Flash / 3.8
-   Flash High      Flash High      Flash High
+  Flash / G4       Flash / G4      Flash / G4
+  Hydrogen High    Hydrogen High   Hydrogen High
        |               |
        +-------+-------+
                |
             tester
-      Flash / 3.8 Flash High
+    Flash / G4 Hydrogen High
                |
            reviewer
    Gemini 4 Neon (Extra High)
@@ -42,9 +42,7 @@ Antigravity supports two multi-agent delegation mechanisms with different model 
    - `explorer.md`, `worker.md`, `tester.md`, and `researcher.md` set `model: flash`, mapping to Antigravity's Flash subagent tier.
 2. **Exact Model Pinning (`/swarm`)**:
    - When you explicitly start a swarm with `/swarm`, `swarm{action:"add", model:...}` accepts exact model identifiers verified via `swarm{action:"models"}`.
-   - Keep coordinator and `@reviewer` on `gemini-4-neon-xhigh` (`Gemini 4 Neon (XHigh)`), and pin `@explorer`, `@worker`, `@tester`, and `@researcher` to `gemini-3.8-flash-high` (`Gemini 3.8 Flash (High)`).
-
-> **Model lifecycle note**: Per the official Antigravity model catalog, **Gemini 3.8 Flash** is scheduled for removal on **November 30, 2026**. After that date, replace `gemini-3.8-flash-high` in `/swarm` with **Gemini 4 Hydrogen (High)** (`gemini-4-hydrogen-high`); `.agents/agents/*.md` roles using `model: flash` continue to work automatically.
+   - Keep coordinator and `@reviewer` on `gemini-4-neon-xhigh` (`Gemini 4 Neon (XHigh)`), and pin `@explorer`, `@worker`, `@tester`, and `@researcher` to `gemini-4-hydrogen-high` (`Gemini 4 Hydrogen (High)`).
 
 ## Setup
 
@@ -75,7 +73,7 @@ Antigravity supports two multi-agent delegation mechanisms with different model 
    pwsh -File .\setup.ps1
    ```
 
-3. When prompted, enter an **existing target repository other than this one**, choose a profile by number or name (Enter selects `NeonXHigh-FlashHigh`), and confirm which components to install:
+3. When prompted, enter an **existing target repository other than this one**, choose a profile by number or name (Enter selects `NeonXHigh-HydrogenHigh`), and confirm which components to install:
 
    ```text
    Target repository path: ../my-project
@@ -111,7 +109,7 @@ my-project/
   agy --model gemini-4-neon-xhigh
   ```
 
-  To make this your default CLI configuration, merge `profiles/NeonXHigh-FlashHigh/cli/settings.json` into `~/.gemini/antigravity-cli/settings.json` (do not blindly overwrite existing keys).
+  To make this your default CLI configuration, merge `profiles/NeonXHigh-HydrogenHigh/cli/settings.json` into `~/.gemini/antigravity-cli/settings.json` (do not blindly overwrite existing keys).
 
 ## How to use the skill
 
@@ -127,8 +125,8 @@ worker to implement it, and tester and reviewer to verify it.
 
 | Choice | Profile | Root | Execution roles (`explorer`, `worker`, `tester`, `researcher`) | Reviewer | Concurrent subagents |
 |---|---|---|---|---|---:|
-| 1 (default) | `NeonXHigh-FlashHigh` | `gemini-4-neon-xhigh` | `gemini-3.8-flash-high` (`model: flash` in subagents; exact in `/swarm`) | `gemini-4-neon-xhigh` (`model: inherit`) | 4 |
-| 2 | `NeonXHigh-FlashHigh-max-2-subagents` | `gemini-4-neon-xhigh` | `gemini-3.8-flash-high` (`model: flash` in subagents; exact in `/swarm`) | `gemini-4-neon-xhigh` (`model: inherit`) | 2 |
+| 1 (default) | `NeonXHigh-HydrogenHigh` | `gemini-4-neon-xhigh` | `gemini-4-hydrogen-high` (`model: flash` in subagents; exact in `/swarm`) | `gemini-4-neon-xhigh` (`model: inherit`) | 4 |
+| 2 | `NeonXHigh-HydrogenHigh-max-2-subagents` | `gemini-4-neon-xhigh` | `gemini-4-hydrogen-high` (`model: flash` in subagents; exact in `/swarm`) | `gemini-4-neon-xhigh` (`model: inherit`) | 2 |
 
 For personal/global installation across all repositories, copy `profiles/<profile>/agents/agents/*.md` into `~/.gemini/config/agents/`, copy `profiles/<profile>/agents/skills/agy-orchestrator/` into `~/.gemini/config/skills/agy-orchestrator/`, and append `AGENTS.md` to `~/.gemini/config/AGENTS.md`.
 
@@ -137,12 +135,12 @@ For personal/global installation across all repositories, copy `profiles/<profil
 ```text
 .
 ├── profiles/
-│   ├── NeonXHigh-FlashHigh/
+│   ├── NeonXHigh-HydrogenHigh/
 │   │   ├── agents/
 │   │   │   ├── agents/*.md
 │   │   │   └── skills/agy-orchestrator/SKILL.md
 │   │   └── cli/settings.json
-│   └── NeonXHigh-FlashHigh-max-2-subagents/
+│   └── NeonXHigh-HydrogenHigh-max-2-subagents/
 │       ├── agents/
 │       │   ├── agents/*.md
 │       │   └── skills/agy-orchestrator/SKILL.md
@@ -162,7 +160,7 @@ For personal/global installation across all repositories, copy `profiles/<profil
 
 ## Guides
 
-- [Neon XHigh + Flash High orchestration and manual setup](guides/full-orchestration.md)
+- [Neon XHigh + Hydrogen High orchestration and manual setup](guides/full-orchestration.md)
 - [Low-concurrency profile and global `~/.gemini/config/` setup](guides/low-concurrency.md)
 - [Complex repository work (worktrees, `/plan`, `/swarm`, `/boost`)](guides/complex-repo-work.md)
 - [Fast iteration](guides/fast-iteration.md) and [routine coding](guides/routine-coding.md)
